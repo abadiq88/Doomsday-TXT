@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>نسخ تلقائي مع زخارف وكيبورد (مُحسّن)</title>
+  <!-- CSS المكتبة -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/simple-keyboard@3.8.30/build/css/index.css"
+  />
+  <style>
+    body {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 15px;
+      margin: 0;
+      font-size: 13px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 15px;
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    h2 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #4fc3f7;
+      text-shadow: 0 0 10px rgba(79, 195, 247, 0.3);
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+    }
+    
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    
+    select {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(40, 40, 60, 0.8);
+      color: #e0e0e0;
+      border: 1px solid rgba(79, 195, 247, 0.3);
+      min-width: 200px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    select:hover {
+      border-color: #4fc3f7;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.2);
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      font-size: 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 100px;
+      justify-content: center;
+    }
+    
+    .btn:hover {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-convert {
+      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    }
+    
+    .btn-convert:hover {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    }
+    
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+    }
+    
+    .btn-info:hover {
+      background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+      box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+    }
+    
+    textarea {
+      width: 100%;
+      height: 120px;
+      font-size: 14px;
+      direction: rtl;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(25, 25, 35, 0.8);
+      color: #ffffff;
+      border: 2px solid rgba(79, 195, 247, 0.2);
+      resize: vertical;
+      margin-bottom: 15px;
+      transition: border-color 0.3s;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #4fc3f7;
+      box-shadow: 0 0 12px rgba(79, 195, 247, 0.2);
+    }
+    
+    .info-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      padding: 12px;
+      background: rgba(40, 40, 60, 0.5);
+      border-radius: 8px;
+    }
+    
+    .char {
+      color: #0f0;
+      font-size: 13px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .msg {
+      font-size: 13px;
+      color: #ccc;
+      min-height: 20px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    
+    .flash-success {
+      animation: flashGreen 0.5s ease-in-out 2;
+    }
+    
+    .flash-fail {
+      animation: flashRed 0.5s ease-in-out 2;
+    }
+    
+    @keyframes flashGreen {
+      0% { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+      50% { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+      100% { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+    }
+    
+    @keyframes flashRed {
+      0% { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); }
+      50% { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+      100% { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); }
+    }
+
+    /* لوحة المفاتيح الافتراضية */
+    .simple-keyboard {
+      direction: ltr !important;
+      margin-top: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    #keyboard {
+      display: none;
+    }
+
+    /* تخصيص ألوان أزرار الكيبورد */
+    .simple-keyboard .hg-button {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+      color: #e0e0e0 !important;
+      border: 1px solid rgba(79, 195, 247, 0.2) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+      transition: all 0.2s !important;
+    }
+    
+    .simple-keyboard .hg-button:hover {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+      transform: translateY(-1px);
+    }
+    
+    .simple-keyboard .hg-button:active {
+      transform: translateY(1px);
+    }
+    
+    .simple-keyboard .hg-button.btn-active {
+      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+    }
+    
+    .footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #666;
+      opacity: 0.7;
+    }
+    
+    /* أنيميشن للزر المتحرك */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .btn-pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* تخصيص شريط التمرير */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(40, 40, 60, 0.5);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+    }
+    
+    /* تصميم متجاوب */
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+        margin: 5px;
+      }
+      
+      .controls-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      select, .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .simple-keyboard {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✍️ اكتب النص فقط، واختر الزخرفة، وسيتم نسخه تلقائيًا ⬆️</h2>
+    
+    <div class="controls-row">
+      <select id="decoration">
+        <option value="">بدون زخرفة</option>
+        <option value="★彡">★彡 ... 彡★</option>
+        <option value="𓆩">𓆩 ... 𓆪</option>
+        <option value="♛">♛ ... ♛</option>
+        <option value="꧁">꧁ ... ꧂</option>
+        <option value="⸙">⸙ ... ⸙</option>
+        <option value="乂">乂 ... 乂</option>
+        <option value="🔪">🔪 ... 🔪</option>
+        <option value="🪖">🪖 ... 🪖</option>
+        <option value="🔫">🔫 ... 🔫</option>
+        <option value="︻デ═一">︻デ═一 ... ︻デ═一</option>
+        <option value="彡★刀★彡">彡★刀★彡 ... 彡★刀★彡</option>
+        <option value="︻╦̵̵͇̿̿̿̿╤──">︻╦̵̵͇̿̿̿̿╤── ... ︻╦̵̵͇̿̿̿̿╤──</option>
+        <option value="꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂">꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂ ... ꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂</option>
+        <option value="卍戰卍">卍戰卍 ... 卍戰卍</option>
+        <option value="乂⸸乂">乂⸸乂 ... 乂⸸乂</option>
+        <option value="⸸𓆩⚔️𓆪⸸">⸸𓆩⚔️𓆪⸸ ... ⸸𓆩⚔️𓆪⸸</option>
+        <option value="🗡️">🗡️ ... 🗡️</option>
+        <option value="💣">💣 ... 💣</option>
+        <option value="⚔️">⚔️ ... ⚔️</option>
+        <option value="🛡️">🛡️ ... 🛡️</option>
+        <option value="🚁">🚁 ... 🚁</option>
+        <option value="🎯">🎯 ... 🎯</option>
+        <option value="🔰">🔰 ... 🔰</option>
+        <option value="☠️">☠️ ... ☠️</option>
+        <option value="✦">✦ ... ✦</option>
+        <option value="༒">༒ ... ༒</option>
+        <option value="✪">✪ ... ✪</option>
+        <option value="➳">➳ ... ➳</option>
+        <option value="✘">✘ ... ✘</option>
+        <option value="卐">卐 ... 卐</option>
+      </select>
+      
+      <button class="btn btn-convert" onclick="convertArabicEnglish()">
+        <span>🔄</span> عربي ↔ إنجليزي
+      </button>
+    </div>
+    
+    <textarea id="myText" placeholder="اكتب هنا... سيتم النسخ تلقائيًا عند ترك النافذة"></textarea>
+    
+    <div class="info-bar">
+      <div class="char" id="charCount">📊 عدد الأحرف: 0</div>
+      <button class="btn" id="copyBtn" onclick="copyText()">
+        <span>📋</span> نسخ
+      </button>
+      <button class="btn btn-danger" onclick="clearText()">
+        <span>🧹</span> مسح
+      </button>
+      <button class="btn btn-info" onclick="openMiniWindow()">
+        <span>🪟</span> نافذة صغيرة
+      </button>
+      <button class="btn" id="toggle-btn">
+        <span>⌨️</span> كيبورد
+      </button>
+      <div class="msg" id="msg">...</div>
+    </div>
+    
+    <!-- حاوية المكتبة للكيبورد -->
+    <div id="keyboard" class="simple-keyboard"></div>
+    
+    <div class="footer">
+      ⚡ استخدام Clipboard API الحديثة مع نسخ احتياطي
+    </div>
+  </div>
+
+  <!-- سكربت المكتبة -->
+  <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@3.8.30/build/index.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const textarea   = document.getElementById('myText');
+      const msg        = document.getElementById('msg');
+      const charCount  = document.getElementById('charCount');
+      const copyBtn    = document.getElementById('copyBtn');
+      const decoration = document.getElementById('decoration');
+      const toggleBtn  = document.getElementById('toggle-btn');
+      const kbRoot     = document.getElementById('keyboard');
+      const Keyboard   = window.SimpleKeyboard.default;
+
+      let isPopup = window.opener !== null;
+      let lastCopiedText = '';
+      let autoCopyEnabled = true;
+
+      // تأثير الوميض
+      function flashEffect(cls) {
+        copyBtn.classList.remove('flash-success','flash-fail');
+        void copyBtn.offsetWidth;
+        copyBtn.classList.add(cls);
+        setTimeout(() => copyBtn.classList.remove(cls), 2000);
+      }
+
+      // الحصول على النص مع الزخرفة
+      function getDecoratedText() {
+        const deco = decoration.value;
+        const text = textarea.value.trim();
+        if (!text) return '';
+        return deco
+          ? `${deco} ${text} ${flipDecoration(deco)}`
+          : text;
+      }
+
+      // قلب الزخارف المعروفة
+      function flipDecoration(d) {
+        if (d === "★彡") return "彡★";
+        if (d === "𓆩") return "𓆪";
+        if (d === "꧁") return "꧂";
+        return d;
+      }
+
+      // دالة تحويل النص العربي ↔ الإنجليزية
+      window.convertArabicEnglish = function() {
+        const text = textarea.value;
+        if (!text.trim()) {
+          msg.innerHTML = '⚠️ لا يوجد نص للتحويل';
+          return;
+        }
+        
+        let convertedText = '';
+        let conversionType = '';
+        
+        // التحقق مما إذا النص يحتوي على أحرف عربية
+        const hasArabic = /[\u0600-\u06FF]/.test(text);
+        const hasEnglish = /[A-Za-z]/.test(text);
+        
+        if (hasArabic && hasEnglish) {
+          // إذا كان النص مختلطاً، نعكس كل حرف على حدة
+          for (let char of text) {
+            const arabicEquivalent = englishToArabicMap[char.toLowerCase()] || 
+                                   arabicToEnglishMap[char] || char;
+            convertedText += arabicEquivalent;
+          }
+          conversionType = 'مختلط ↔ مختلط';
+        } else if (hasArabic) {
+          // تحويل عربي إلى إنجليزي
+          for (let char of text) {
+            convertedText += arabicToEnglishMap[char] || char;
+          }
+          conversionType = 'عربي → إنجليزي';
+        } else {
+          // تحويل إنجليزي إلى عربي
+          for (let char of text.toLowerCase()) {
+            convertedText += englishToArabicMap[char] || char;
+          }
+          conversionType = 'إنجليزي → عربي';
+        }
+        
+        textarea.value = convertedText;
+        updateCount();
+        keyboard.setInput(convertedText);
+        
+        // عرض رسالة التحويل
+        msg.innerHTML = `🔄 ${conversionType}`;
+        setTimeout(() => {
+          if (msg.innerHTML.includes('🔄')) msg.innerHTML = '...';
+        }, 3000);
+      };
+
+      // خريطة تحويل الإنجليزية إلى العربية
+      const englishToArabicMap = {
+        'a': 'ا', 'b': 'ب', 'c': 'س', 'd': 'د', 'e': 'ي',
+        'f': 'ف', 'g': 'ج', 'h': 'ه', 'i': 'ي', 'j': 'ج',
+        'k': 'ك', 'l': 'ل', 'm': 'م', 'n': 'ن', 'o': 'و',
+        'p': 'ب', 'q': 'ق', 'r': 'ر', 's': 'س', 't': 'ت',
+        'u': 'و', 'v': 'ف', 'w': 'و', 'x': 'كس', 'y': 'ي',
+        'z': 'ز'
+      };
+
+      // خريطة تحويل العربية إلى الإنجليزية
+      const arabicToEnglishMap = {
+        'ا': 'a', 'أ': 'a', 'إ': 'e', 'آ': 'a',
+        'ب': 'b', 'ت': 't', 'ث': 'th',
+        'ج': 'j', 'ح': 'h', 'خ': 'kh',
+        'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z',
+        'س': 's', 'ش': 'sh',
+        'ص': 's', 'ض': 'd',
+        'ط': 't', 'ظ': 'z',
+        'ع': 'a', 'غ': 'gh',
+        'ف': 'f', 'ق': 'q',
+        'ك': 'k', 'ل': 'l',
+        'م': 'm', 'ن': 'n',
+        'ه': 'h', 'و': 'w', 'ي': 'y'
+      };
+
+      // نسخ النص باستخدام Clipboard API الحديثة
+      window.copyText = async function() {
+        const decoratedText = getDecoratedText();
+        if (!decoratedText) {
+          msg.innerHTML = '❌ لا يوجد نص للنسخ!';
+          flashEffect('flash-fail');
+          return;
+        }
+        
+        // إذا كان النص نفسه المنسوخ مسبقاً
+        if (lastCopiedText === decoratedText) {
+          msg.innerHTML = '📋 النص منسوخ مسبقاً!';
+          return;
+        }
+        
+        try {
+          // استخدام Clipboard API الحديثة (الأفضل)
+          await navigator.clipboard.writeText(decoratedText);
+          lastCopiedText = decoratedText;
+          msg.innerHTML = '✔️ تم النسخ مع الزخرفة!';
+          flashEffect('flash-success');
+          
+          // عرض معاينة النص المنسوخ
+          const preview = decoratedText.length > 50 
+            ? decoratedText.substring(0, 50) + '...' 
+            : decoratedText;
+          console.log('✅ تم نسخ:', preview);
+        } catch (err) {
+          console.error('❌ فشل النسخ بـ Clipboard API:', err);
+          // الرجوع إلى الطريقة القديمة كنسخة احتياطية
+          fallbackCopyText(decoratedText);
+        }
+      };
+
+      // نسخة احتياطية باستخدام الطريقة القديمة
+      function fallbackCopyText(text) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.style.position = 'fixed';
+        temp.style.opacity = '0';
+        document.body.appendChild(temp);
+        temp.select();
+        temp.setSelectionRange(0, 99999);
+        
+        try {
+          const success = document.execCommand('copy');
+          if (success) {
+            lastCopiedText = text;
+            msg.innerHTML = '✔️ تم النسخ (الطريقة القديمة)!';
+            flashEffect('flash-success');
+          } else {
+            msg.innerHTML = '❌ فشل النسخ!';
+            flashEffect('flash-fail');
+          }
+        } catch (err) {
+          msg.innerHTML = '❌ خطأ في النسخ!';
+          flashEffect('flash-fail');
+        } finally {
+          document.body.removeChild(temp);
+        }
+      }
+
+      // مسح الحقل
+      window.clearText = function() {
+        textarea.value = '';
+        lastCopiedText = '';
+        updateCount();
+        keyboard.setInput('');
+        msg.innerHTML = '🧹 تم مسح النص';
+        setTimeout(() => {
+          if (msg.innerHTML === '🧹 تم مسح النص') msg.innerHTML = '...';
+        }, 2000);
+      };
+
+      // تحديث العد
+      function updateCount() {
+        const count = textarea.value.length;
+        charCount.innerHTML = `📊 عدد الأحرف: ${count}`;
+        
+        // تغيير اللون حسب عدد الأحرف
+        if (count === 0) {
+          charCount.style.color = '#ccc';
+        } else if (count < 50) {
+          charCount.style.color = '#0f0';
+        } else if (count < 100) {
+          charCount.style.color = '#ff0';
+        } else {
+          charCount.style.color = '#f00';
+        }
+      }
+
+      // نافذة صغيرة
+      window.openMiniWindow = function() {
+        if (!isPopup) {
+          const features = `
+            width=450,height=400,
+            menubar=no,toolbar=no,
+            location=no,status=no,
+            scrollbars=yes,resizable=yes
+          `;
+          const newWindow = window.open(window.location.href, '_blank', features);
+          
+          if (newWindow) {
+            msg.innerHTML = '🪟 فتح نافذة جديدة';
+          } else {
+            msg.innerHTML = '❌ تم حظر النافذة المنبثقة';
+          }
+        } else {
+          msg.innerHTML = '⚠️ هذه نافذة صغيرة بالفعل';
+        }
+        
+        setTimeout(() => {
+          if (msg.innerHTML.includes('🪟') || msg.innerHTML.includes('⚠️')) {
+            msg.innerHTML = '...';
+          }
+        }, 3000);
+      };
+
+      // تبديل ظهور الكيبورد
+      function toggleKeyboard() {
+        const isVisible = kbRoot.style.display === 'block';
+        kbRoot.style.display = isVisible ? 'none' : 'block';
+        toggleBtn.innerHTML = isVisible 
+          ? '<span>⌨️</span> كيبورد' 
+          : '<span>✖️</span> إخفاء الكيبورد';
+        
+        // إضافة تأثير للزر
+        toggleBtn.classList.add('btn-pulse');
+        setTimeout(() => toggleBtn.classList.remove('btn-pulse'), 1000);
+      }
+      
+      toggleBtn.addEventListener('click', toggleKeyboard);
+
+      // مزامنة الكتابة اليدوية
+      textarea.addEventListener('input', () => {
+        keyboard.setInput(textarea.value);
+        updateCount();
+        lastCopiedText = ''; // إعادة تعيين آخر نص منسوخ
+      });
+
+      // إنشاء الكيبورد مع التخطيطات
+      const keyboard = new Keyboard({
+        rootElement: '#keyboard',
+        layout: {
+          arabic: [
+            "ض ص ث ق ف غ ع ه خ ح ج د {bksp}",
+            "ش س ي ب ل ا ت ن م ك ط",
+            "ز ر ء ؤ ر لا ى ة و ز ظ",
+            "{space} {lang} {sym} {enter}"
+          ],
+          english: [
+            "` 1 2 3 4 5 6 7 8 9 0 - = {bksp}",
+            "q w e r t y u i o p [ ] \\",
+            "a s d f g h j k l ; '",
+            "z x c v b n m , . /",
+            "{space} {lang} {sym} {enter}"
+          ],
+          symbols: [
+            "~ ! @ # $ % ^ & * ( ) _ + {bksp}",
+            "- = { } [ ] \\ | ; : ' \"",
+            "< > , . ? / `",
+            "{space} {lang} {enter}"
+          ]
+        },
+        layoutName: "arabic",
+        display: {
+          "{bksp}": "⌫",
+          "{space}": "⎵",
+          "{lang}": "ع/EN",
+          "{sym}": "#+=",
+          "{enter}": "↵"
+        },
+        onChange: inputVal => {
+          textarea.value = inputVal;
+          updateCount();
+          lastCopiedText = '';
+        },
+        onKeyPress: button => {
+          if (button === "{bksp}") {
+            const val = keyboard.getInput().slice(0, -1);
+            keyboard.setInput(val);
+            return;
+          }
+          if (button === "{lang}") {
+            const current = keyboard.options.layoutName;
+            const next = current === "arabic" ? "english" : "arabic";
+            keyboard.setOptions({ layoutName: next });
+            
+            // تحديث زر تبديل اللغة
+            const langBtn = document.querySelector('[data-skbtn="{lang}"]');
+            if (langBtn) {
+              langBtn.textContent = next === "arabic" ? "ع/EN" : "EN/ع";
+            }
+            return;
+          }
+          if (button === "{sym}") {
+            const curr = keyboard.options.layoutName;
+            const next = curr === "symbols" ? "arabic" : "symbols";
+            keyboard.setOptions({ layoutName: next });
+            return;
+          }
+          if (button === "{enter}") {
+            copyText();
+            return;
+          }
+          if (button === "{space}") {
+            keyboard.setInput(keyboard.getInput() + " ");
+          }
+        }
+      });
+
+      // النسخ التلقائي عند ترك النافذة
+      window.addEventListener('blur', () => {
+        if (autoCopyEnabled && textarea.value.trim() !== '') {
+          setTimeout(() => {
+            if (!document.hasFocus()) {
+              copyText();
+            }
+          }, 500);
+        }
+      });
+      
+      document.addEventListener('visibilitychange', () => {
+        if (autoCopyEnabled && document.hidden && textarea.value.trim() !== '') {
+          setTimeout(() => copyText(), 300);
+        }
+      });
+
+      // إضافة حدث لتغيير الزخرفة
+      decoration.addEventListener('change', () => {
+        lastCopiedText = '';
+        msg.innerHTML = '✨ تم تغيير الزخرفة';
+        setTimeout(() => {
+          if (msg.innerHTML === '✨ تم تغيير الزخرفة') msg.innerHTML = '...';
+        }, 2000);
+      });
+
+      // ابدأ بعدد مبدئي
+      updateCount();
+      
+      // رسالة ترحيب
+      setTimeout(() => {
+        if (textarea.value === '') {
+          msg.innerHTML = '🚀 ابدأ بالكتابة... سيتم النسخ تلقائيًا';
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
