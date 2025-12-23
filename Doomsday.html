@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>نسخ تلقائي مع زخارف وكيبورد</title>
+  <!-- CSS المكتبة -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/simple-keyboard@3.8.30/build/css/index.css"
+  />
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Tahoma, sans-serif;
+      text-align: center;
+      padding: 10px;
+      margin: 0;
+      font-size: 12px;
+    }
+    h2 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    textarea {
+      width: 95%;
+      height: 100px;
+      font-size: 14px;
+      direction: rtl;
+      padding: 6px;
+      border-radius: 4px;
+    }
+    select {
+      font-size: 12px;
+      padding: 4px;
+      margin: 5px 0;
+    }
+    .info-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .char {
+      color: #0f0;
+      font-size: 12px;
+    }
+    .msg {
+      font-size: 12px;
+      color: #ccc;
+    }
+    button {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .flash-success {
+      animation: flashGreen 0.4s ease-in-out 3;
+    }
+    .flash-fail {
+      animation: flashRed 0.4s ease-in-out 3;
+    }
+    @keyframes flashGreen {
+      0% { background-color: #0f0; color: #000; }
+      50% { background-color: #222; color: #fff; }
+      100% { background-color: #0f0; color: #000; }
+    }
+    @keyframes flashRed {
+      0% { background-color: #f00; color: #fff; }
+      50% { background-color: #222; color: #fff; }
+      100% { background-color: #f00; color: #fff; }
+    }
+
+    /* لوحة المفاتيح الافتراضية */
+    .simple-keyboard {
+      direction: ltr !important;       /* إجبار LTR حتى لا تنعكس الصفوف */
+      margin-top: 10px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* نخفيها افتراضياً */
+    #keyboard {
+      display: none;
+    }
+
+    /* تخصيص ألوان أزرار الكيبورد */
+    .simple-keyboard .hg-button {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #666 !important;
+      box-shadow: none !important;
+    }
+    .simple-keyboard .hg-button:hover {
+      background: #f0f0f0 !important;
+    }
+  </style>
+</head>
+<body>
+  <h2>✍️ اكتب النص فقط، واختر الزخرفة، وسيتم نسخه تلقائيًا ⬆️</h2>
+
+  <select id="decoration">
+    <option value="">بدون زخرفة</option>
+    <option value="★彡">★彡 ... 彡★</option>
+    <option value="𓆩">𓆩 ... 𓆪</option>
+    <option value="♛">♛ ... ♛</option>
+    <option value="꧁">꧁ ... ꧂</option>
+    <option value="⸙">⸙ ... ⸙</option>
+    <option value="乂">乂 ... 乂</option>
+    <option value="🔪">🔪 ... 🔪</option>
+    <option value="🪖">🪖 ... 🪖</option>
+    <option value="🔫">🔫 ... 🔫</option>
+    <option value="︻デ═一">︻デ═一 ... ︻デ═一</option>
+    <option value="彡★刀★彡">彡★刀★彡 ... 彡★刀★彡</option>
+    <option value="︻╦̵̵͇̿̿̿̿╤──">︻╦̵̵͇̿̿̿̿╤── ... ︻╦̵̵͇̿̿̿̿╤──</option>
+    <option value="꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂">꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂ ... ꧁𓊈𒆜⸸⸸⸸𒆜𓊉꧂</option>
+    <option value="卍戰卍">卍戰卍 ... 卍戰卍</option>
+    <option value="乂⸸乂">乂⸸乂 ... 乂⸸乂</option>
+    <option value="⸸𓆩⚔️𓆪⸸">⸸𓆩⚔️𓆪⸸ ... ⸸𓆩⚔️𓆪⸸</option>
+    <option value="🗡️">🗡️ ... 🗡️</option>
+    <option value="💣">💣 ... 💣</option>
+    <option value="⚔️">⚔️ ... ⚔️</option>
+    <option value="🛡️">🛡️ ... 🛡️</option>
+    <option value="🚁">🚁 ... 🚁</option>
+    <option value="🎯">🎯 ... 🎯</option>
+    <option value="🔰">🔰 ... 🔰</option>
+    <option value="☠️">☠️ ... ☠️</option>
+    <option value="✦">✦ ... ✦</option>
+    <option value="༒">༒ ... ༒</option>
+    <option value="✪">✪ ... ✪</option>
+    <option value="➳">➳ ... ➳</option>
+    <option value="✘">✘ ... ✘</option>
+    <option value="卐">卐 ... 卐</option>
+  </select>
+
+  <textarea id="myText" placeholder="اكتب هنا..."></textarea>
+
+  <div class="info-bar">
+    <div class="char" id="charCount">عدد الأحرف: 0</div>
+    <button id="copyBtn" onclick="copyText()">📋 نسخ</button>
+    <button onclick="clearText()">🧹 مسح</button>
+    <button onclick="openMiniWindow()">🪟 نافذة صغيرة</button>
+    <button id="toggle-btn">⌨️ كيبورد</button>
+    <div class="msg" id="msg">...</div>
+  </div>
+
+  <!-- حاوية المكتبة للكيبورد -->
+  <div id="keyboard" class="simple-keyboard"></div>
+
+  <!-- سكربت المكتبة -->
+  <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@3.8.30/build/index.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const textarea   = document.getElementById('myText');
+      const msg        = document.getElementById('msg');
+      const charCount  = document.getElementById('charCount');
+      const copyBtn    = document.getElementById('copyBtn');
+      const decoration = document.getElementById('decoration');
+      const toggleBtn  = document.getElementById('toggle-btn');
+      const kbRoot     = document.getElementById('keyboard');
+      const Keyboard   = window.SimpleKeyboard.default;
+
+      let isPopup = window.opener !== null;
+
+      // تأثير الوميض
+      function flashEffect(cls) {
+        copyBtn.classList.remove('flash-success','flash-fail');
+        void copyBtn.offsetWidth;
+        copyBtn.classList.add(cls);
+      }
+
+      // الحصول على النص مع الزخرفة
+      function getDecoratedText() {
+        const deco = decoration.value;
+        const text = textarea.value.trim();
+        if (!text) return '';
+        return deco
+          ? `${deco} ${text} ${flipDecoration(deco)}`
+          : text;
+      }
+
+      // قلب الزخارف المعروفة
+      function flipDecoration(d) {
+        if (d === "★彡") return "彡★";
+        if (d === "𓆩") return "𓆪";
+        if (d === "꧁") return "꧂";
+        return d;
+      }
+
+      // نسخ النص
+      window.copyText = function() {
+        const temp = document.createElement('textarea');
+        temp.value = getDecoratedText();
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          const success = document.execCommand('copy');
+          msg.innerHTML = success
+            ? '✔️ تم النسخ مع الزخرفة!'
+            : '❌ فشل النسخ!';
+          flashEffect(success ? 'flash-success':'flash-fail');
+        } catch {
+          msg.innerHTML = '❌ فشل النسخ!';
+          flashEffect('flash-fail');
+        }
+        document.body.removeChild(temp);
+      };
+
+      // مسح الحقل
+      window.clearText = function() {
+        textarea.value = '';
+        updateCount();
+        msg.innerHTML = '🧹 تم المسح';
+      };
+
+      // تحديث العد
+      function updateCount() {
+        charCount.innerHTML = 'عدد الأحرف: ' + textarea.value.length;
+      }
+
+      // نافذة صغيرة
+      window.openMiniWindow = function() {
+        if (!isPopup) {
+          window.open(window.location.href, "_blank",
+            "width=420,height=360,menubar=no,toolbar=no,location=no,status=no,scrollbars=no,resizable=no");
+        } else {
+          alert("⚠️ هذه نافذة صغيرة بالفعل.");
+        }
+      };
+
+      // تبديل ظهور الكيبورد
+      function toggleKeyboard() {
+        kbRoot.style.display = kbRoot.style.display === 'block' ? 'none' : 'block';
+      }
+      toggleBtn.addEventListener('click', toggleKeyboard);
+
+      // مزامنة الكتابة اليدوية
+      textarea.addEventListener('input', () => {
+        keyboard.setInput(textarea.value);
+        updateCount();
+      });
+
+      // إنشاء الكيبورد مع التخطيطات الثلاث
+      const keyboard = new Keyboard({
+        rootElement: '#keyboard',
+        layout: {
+          arabic: [
+            "ض ص ث ق ف غ ع ه خ ح ج د {bksp}",
+            "ش س ي ب ل ا ت ن م ك ط",
+            "ز ر ء ؤ ر لا ى ة و ز ظ",
+            "{space} {lang} {sym}"
+          ],
+          english: [
+            "` 1 2 3 4 5 6 7 8 9 0 - = {bksp}",
+            "q w e r t y u i o p [ ] \\",
+            "a s d f g h j k l ; '",
+            "z x c v b n m , . /",
+            "{space} {lang} {sym}"
+          ],
+          symbols: [
+            "~ ! @ # $ % ^ & * ( ) _ + {bksp}",
+            "- = { } [ ] \\ | ; : ' \"",
+            "< > , . ? / `",
+            "{space} {lang}"
+          ]
+        },
+        layoutName: "arabic",
+        display: {
+          "{bksp}": "⌫",
+          "{space}": "⎵",
+          "{lang}": "EN/ع",
+          "{sym}": "#+="
+        },
+        onChange: inputVal => {
+          textarea.value = inputVal;
+          updateCount();
+        },
+        onKeyPress: button => {
+          if (button === "{bksp}") {
+            const val = keyboard.getInput().slice(0, -1);
+            keyboard.setInput(val);
+            return;
+          }
+          if (button === "{lang}") {
+            const next = keyboard.options.layoutName === "arabic" ? "english" : "arabic";
+            keyboard.setOptions({ layoutName: next });
+            return;
+          }
+          if (button === "{sym}") {
+            const curr = keyboard.options.layoutName;
+            const next = curr === "symbols" ? "english" : "symbols";
+            keyboard.setOptions({ layoutName: next });
+            return;
+          }
+          if (button === "{space}") {
+            keyboard.setInput(keyboard.getInput() + " ");
+          }
+        }
+      });
+
+      // إذا خرج المستخدم من النافذة ننفذ النسخ
+      window.addEventListener('blur', () => {
+        if (textarea.value.trim() !== '') copyText();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && textarea.value.trim() !== '') copyText();
+      });
+
+      // ابدأ بعدد مبدئي
+      updateCount();
+    });
+  </script>
+</body>
+</html>
